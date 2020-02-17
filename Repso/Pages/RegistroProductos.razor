@@ -1,0 +1,122 @@
+﻿@page "/producto"
+<h3>Registro de Productos</h3>
+
+<EditForm Model="Producto" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+	<div class="form-group">
+		<label for="id">Producto Id</label>
+		<InputNumber @bind-Value="@Producto.ProductosId" class="form-control" />
+		<ValidationMessage For="@(()=>Producto.ProductosId)" />
+		<button type="button" class="btn btn-secondary" @onclick="Buscar">Buscar</button>
+	</div>
+
+	<div class="form-group">
+		<label for="Fecha">Fecha</label>
+		<InputDate @bind-Value="@Producto.Fecha" class="form-control" />
+		<ValidationMessage For="@(()=>Producto.Fecha)" />
+	</div>
+
+	<div class="form-group">
+		<label for="descripcion">Descripcion</label>
+		<InputText @bind-Value="@Producto.Descripcion" class="form-control" />
+		<ValidationMessage For="@(()=>Producto.Descripcion)" />
+	</div>
+
+	<div class="form-group">
+		<label for="costo">Costo</label>
+		<InputNumber @bind-Value="@Producto.Costo" class="form-control" @oninput="CalcularPrecio" />
+		<ValidationMessage For="@(()=>Producto.Costo)" />
+	</div>
+
+	<div class="form-group">
+		<label for="ganancia">Ganancia</label>
+		<InputNumber @bind-Value="@Producto.Ganancia" class="form-control" @oninput="CalcularPrecio" />
+		<ValidationMessage For="@(()=>Producto.Ganancia)" />
+	</div>
+
+	<div class="form-group">
+		<label for="precio">Precio</label>
+		<InputNumber @bind-Value="@Producto.Precio" class="form-control"/>
+		<ValidationMessage For="@(()=>Producto.Precio)" />
+	</div>
+
+	<div class="form-group">
+		<button type="submit" class="btn btn-outline-secondary">Guardar</button>
+		<button type="button" class="btn btn-outline-danger" @onclick="Eliminar">Eliminar</button>
+	</div>
+
+	<h5>@mensaje</h5>
+
+
+</EditForm>
+
+
+@code {
+
+	public Productos Producto = new Productos();
+	public string mensaje = "";
+
+	public void Guardar()
+	{
+		CalcularPrecio();
+		ProductoController controller = new ProductoController();
+
+		if (controller.Guardar(Producto))
+		{
+			this.Producto = new Productos();
+			mensaje = "Producto Guardado";
+		}
+		else
+		{
+			this.Producto = new Productos();
+			mensaje = "Error al guardar";
+		}
+	}
+
+	public void Buscar()
+	{
+		ProductoController controller = new ProductoController();
+
+		var producto = controller.Buscar(Producto.ProductosId);
+
+		if (producto!=null)
+		{
+			Producto = producto;
+		}
+		else
+		{
+			this.Producto = new Productos();
+			mensaje = "Producto no encontrado";
+		}
+	}
+
+	public void Eliminar()
+	{
+		ProductoController controller = new ProductoController();
+
+		var producto = controller.Buscar(Producto.ProductosId);
+
+		if (producto !=null)
+		{
+			if (controller.Eliminar(Producto.ProductosId))
+			{
+				this.Producto = new Productos();
+				mensaje = "Producto Eliminado";
+			}
+			else
+			{
+				this.Producto = new Productos();
+				mensaje = "Error al Eliminar";
+			}
+		}
+	}
+
+	public void CalcularPrecio()
+	{
+		if (Producto!=null)
+		{
+			Producto.Precio = Producto.Costo + Producto.Costo * Producto.Ganancia / 100;
+		}
+	}
+}

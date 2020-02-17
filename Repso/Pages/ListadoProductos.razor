@@ -1,0 +1,39 @@
+﻿@page "/listado"
+<h3>Listado de Productos</h3>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Descripcion</th>
+			<th>Fecha</th>
+			<th>Costo</th>
+			<th>Ganancia</th>
+			<th>Precio</th>
+		</tr>
+	</thead>
+	<tbody>
+			@foreach (var item in lista)
+			{
+			<tr>
+				<th>@item.Descripcion</th>
+				<th>@item.Fecha.ToString("dd/MM/yyyy")</th>
+				<th>@item.Costo</th>
+				<th>@item.Ganancia</th>
+				<th>@item.Precio</th>
+			</tr>
+			}
+		</tbody>
+
+	</table>
+
+
+@code {
+	public List<Productos> lista;
+
+	protected override void OnInitialized()
+	{
+		ProductoController controller = new ProductoController();
+
+		lista = controller.GetProductos(e => true);
+	}
+}
